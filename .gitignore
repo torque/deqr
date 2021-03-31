@@ -1,0 +1,10 @@
+*.c
+__pycache__/
+build
+*.egg-info/
+*.so
+*.dylib
+.python-version
+*.hex
+setup.py
+dist/

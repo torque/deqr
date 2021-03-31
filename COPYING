@@ -1,0 +1,9 @@
+The qrdec dependency is licensed under the GNU LGPL, version 2.1. See
+LICENSE.lgpl for details. Binaries statically link that dependency and must be
+distributed under the terms of the LGPL 2.1. See also: deps/qrdec/COPYING.
+
+The quirc dependency is licensed under the ISC license. See LICENSE.isc for
+details. See also: deps/quirc/LICENSE
+
+The code in this project is also licensed under the ISC license. When in doubt,
+check the individual files for copyright headers.

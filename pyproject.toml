@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "deqr"
+version = "0.1.0"
+description = "qr code decoding library"
+authors = ["torque <torque@users.noreply.github.com>"]
+build="build.py"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+numpy = "^1.20.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+ipython = "^7.22.0"
+Cython = {version = "3.0a7", allow-prereleases = true}
+
+[build-system]
+requires = [
+    "cython==3.0a7",
+    "poetry-core>=1.0.0",
+    "setuptools>=40.9.0",
+    "wheel",
+]
+build-backend = "poetry.core.masonry.api"
