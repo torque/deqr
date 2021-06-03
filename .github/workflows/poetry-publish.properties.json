@@ -1,0 +1,6 @@
+{
+    "name": "Publish with Poetry",
+    "description": "Publish wheels using Poetry",
+    "iconName": "python",
+    "categories": ["Python"]
+}
