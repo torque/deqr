@@ -3,7 +3,10 @@ name = "deqr"
 version = "0.1.0"
 description = "qr code decoding library"
 authors = ["torque <torque@users.noreply.github.com>"]
-build="build.py"
+license = "LGPL-2.1-or-later"
+readme = "README.md"
+repository = "https://github.com/torque/deqr"
+build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.8"
