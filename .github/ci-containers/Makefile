@@ -1,30 +1,37 @@
 DOCKER_REGISTRY := docker.pkg.github.com
 DOCKER_PROJECT := torque/deqr
 
-PYTHON_VERSIONS := 3.8 3.9
+ARCHITECTURES := aarch64 x86_64
 REGISTRY_PREFIX := $(DOCKER_REGISTRY)/$(DOCKER_PROJECT)
-BUILD_ENV_PREFIX := $(REGISTRY_PREFIX)/build-env
-GET_BUILD_ENV_TAG = $(addprefix $(BUILD_ENV_PREFIX)@,$(1))
-GET_PYTHON_VERSION = $(lastword $(subst @, ,$(1)))
+IMAGE_BASENAME := $(REGISTRY_PREFIX)/linux-build
+GET_IMAGE_TAG = $(addprefix $(IMAGE_BASENAME)@,$(1))
+GET_ARCHITECTURE = $(lastword $(subst @, ,$(1)))
 FIX_TAG_FOR_DOCKER = $(subst @,:,$(1))
 
-BUILD_ENV_IMAGES := $(call GET_BUILD_ENV_TAG, $(PYTHON_VERSIONS))
+GET_PUSH_ARCHITECTURE = $(lastword $(subst -, ,$(1)))
+GET_IMAGE_FOR_PUSH = $(addprefix $(IMAGE_BASENAME):,$(call GET_PUSH_ARCHITECTURE,$(1)))
+PUSH_COMMAND = docker push $(1);
+
+BUILD_ENV_IMAGES := $(call GET_IMAGE_TAG,$(ARCHITECTURES))
 ALL_IMAGES := $(BUILD_ENV_IMAGES)
 
-.PHONY: all push python build-env $(ALL_IMAGES)
+.SECONDEXPANSION:
+.PHONY: all push $(addprefix push-,$(ARCHITECTURES)) $(ARCHITECTURES) $(ALL_IMAGES)
 
-all: build-env
+all: $(ALL_IMAGES)
 
-push: PUSHCOMMAND = docker push $(1);
 push: $(ALL_IMAGES)
-	$(foreach image,$(ALL_IMAGES),$(call PUSHCOMMAND,$(call FIX_TAG_FOR_DOCKER,$(image))))
+	$(foreach image,$(ALL_IMAGES),$(call PUSH_COMMAND,$(call FIX_TAG_FOR_DOCKER,$(image))))
 
-build-env: $(BUILD_ENV_IMAGES)
+$(addprefix push-,$(ARCHITECTURES)): $(call GET_PUSH_ARCHITECTURE,$$@)
+	$(call PUSH_COMMAND,$(call GET_IMAGE_FOR_PUSH,$@))
 
-$(BUILD_ENV_IMAGES): SOURCE_TAG = $(call GET_PYTHON_VERSION,$@)-alpine
+$(ARCHITECTURES): $(call GET_IMAGE_TAG,$$@)
+
+$(BUILD_ENV_IMAGES): IMG_ARCHITECTURE = $(call GET_ARCHITECTURE,$@)
 $(BUILD_ENV_IMAGES):
-	docker pull python:$(SOURCE_TAG)
+	docker pull quay.io/pypa/manylinux_2_24_$(IMG_ARCHITECTURE):latest
 	docker build \
 		-f "build-env.Dockerfile" \
-		--build-arg "PYTHON_VERSION=$(SOURCE_TAG)" \
+		--build-arg "ARCHITECTURE=$(IMG_ARCHITECTURE)" \
 		-t "$(call FIX_TAG_FOR_DOCKER,$@)" ../..

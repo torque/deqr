@@ -1,8 +1,13 @@
-ARG PYTHON_VERSION=3.8-alpine
-FROM python:$PYTHON_VERSION
+ARG ARCHITECTURE=x86_64
+FROM quay.io/pypa/manylinux_2_24_$ARCHITECTURE:latest
 
-# python's crypto library has rust as a build dependency, unfortunately
-RUN apk add --no-cache git gcc musl-dev libffi-dev libressl-dev curl unzip rust cargo
-RUN python -m pip install -U pip poetry pytest
+RUN apt-get update && apt-get install -y build-essential git libffi-dev libssl-dev curl unzip rustc cargo
+ENV PY38=/opt/python/cp38-cp38/bin/python
+ENV PY39=/opt/python/cp39-cp39/bin/python
+RUN $PY38 -m pip install -U pip poetry pytest \
+ && $PY38 -m poetry config virtualenvs.create false
+RUN $PY39 -m pip install -U pip poetry pytest \
+ && $PY39 -m poetry config virtualenvs.create false
 COPY poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false && poetry install --no-root
+RUN $PY38 -m poetry install --no-root
+RUN $PY39 -m poetry install --no-root
