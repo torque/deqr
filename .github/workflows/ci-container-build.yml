@@ -1,0 +1,33 @@
+name: Build CI container
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/ci-containers/**"
+      - "poetry.lock"
+      - ".github/ci-container-build.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - ".github/ci-containers/**"
+      - "poetry.lock"
+      - ".github/ci-container-build.yml"
+
+jobs:
+  build-linux-aarch64-ci-container:
+    runs-on: [self-hosted, linux, ARM64]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build images
+      run: make
+      working-directory: .github/ci-containers
+    - name: Push images
+      run: |
+        echo ${GITHUB_TOKEN} | docker login -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} --password-stdin docker.pkg.github.com
+        make push
+        docker logout docker.pkg.github.com
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      working-directory: .github/ci-containers
