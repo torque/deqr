@@ -62,6 +62,8 @@ cdef class QRDecoder:
                 datatypes.QRCodeData(data.data_type, data.payload[:data.payload_len]),
             )
 
+            center = self.compute_center_from_bounds(code.corners)
+
             decoded.append(
                 datatypes.QRCode(
                     version=data.version,
@@ -69,7 +71,7 @@ cdef class QRDecoder:
                     mask=data.mask,
                     data_entries=data_entries,
                     corners=tuple((c.x, c.y) for c in code.corners),
-                    center=(-1, -1)
+                    center=(center.x, center.y)
                 )
             )
 
@@ -87,6 +89,33 @@ cdef class QRDecoder:
             image.reshape(width*height)
         )
         return self._c_set_image(reshaped, width, height);
+
+    cdef quircdecl.quirc_point compute_center_from_bounds(self, quircdecl.quirc_point corners[4]) nogil:
+        cdef int divisor = 0
+        cdef int lcoeff = 0
+        cdef int rcoeff = 0
+
+        divisor = (
+            (corners[0].x - corners[2].x) * (corners[1].y - corners[3].y)
+            - (corners[0].y - corners[2].y) * (corners[1].x - corners[3].x)
+        )
+
+        if divisor == 0:
+            return quircdecl.quirc_point(-1, -1)
+        else:
+            lcoeff = corners[0].x * corners[2].y - corners[0].y * corners[2].x
+            rcoeff = corners[1].x * corners[3].y - corners[1].y * corners[3].x
+
+            return quircdecl.quirc_point(
+                (
+                    (corners[1].x - corners[3].x) * lcoeff
+                    - (corners[0].x - corners[2].x) * rcoeff
+                ) // divisor,
+                (
+                    (corners[1].y - corners[3].y) * lcoeff
+                    - (corners[0].y - corners[2].y) * rcoeff
+                ) // divisor
+            )
 
     cdef int _c_set_image(self, quircdecl.uint8[::1] image, int width, int height) nogil:
 
