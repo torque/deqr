@@ -93,7 +93,8 @@ cdef class QRDecoder:
                         ecc_level=QREccLevelMap[code.ecc_level],
                         mask=code.mask,
                         data_entries=data_entries,
-                        corners=corners
+                        corners=corners,
+                        center=(code.center[0], code.center[1])
                     )
                 )
         finally:

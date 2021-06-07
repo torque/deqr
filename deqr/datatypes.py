@@ -49,23 +49,26 @@ class QRCode:
     center: tuple[int, int]
     corners: tuple[tuple[int, int], ...]
 
-    def __init__(self, version, ecc_level, mask, data_entries, corners):
+    def __init__(self, version, ecc_level, mask, data_entries, corners, center):
         self.version = version
         self.ecc_level = QREccLevel(ecc_level)
         self.mask = mask
         self.data_entries = data_entries
 
         self.corners = corners
+        self.center = center
 
     def __str__(self):
         return (
-            "QRCode(version=%d, ecc_level=%s, mask=%d, data_entries=%s, corners=%s)"
+            "QRCode(version=%d, ecc_level=%s, mask=%d, data_entries=%s, "
+            "corners=%s, center=%s)"
         ) % (
             self.version,
             self.ecc_level,
             self.mask,
             self.data_entries,
             self.corners,
+            self.center
         )
 
     def __repr__(self):

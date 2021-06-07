@@ -68,7 +68,8 @@ cdef class QRDecoder:
                     ecc_level=data.ecc_level,
                     mask=data.mask,
                     data_entries=data_entries,
-                    corners=tuple((c.x, c.y) for c in code.corners)
+                    corners=tuple((c.x, c.y) for c in code.corners),
+                    center=(-1, -1)
                 )
             )
 
