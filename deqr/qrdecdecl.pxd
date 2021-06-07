@@ -45,11 +45,13 @@ cdef extern from "qrcode.h":
         int nentries;
         unsigned char version;
         unsigned char ecc_level;
+        unsigned char mask;
         unsigned char sa_index;
         unsigned char sa_size;
         unsigned char sa_parity;
         unsigned char self_parity;
         qr_point bbox[4];
+        qr_point center;
 
     cdef struct qr_code_data_list:
         qr_code_data *qrdata

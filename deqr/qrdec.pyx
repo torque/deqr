@@ -91,7 +91,7 @@ cdef class QRDecoder:
                     datatypes.QRCode(
                         version=code.version,
                         ecc_level=QREccLevelMap[code.ecc_level],
-                        mask=0,
+                        mask=code.mask,
                         data_entries=data_entries,
                         corners=corners
                     )
