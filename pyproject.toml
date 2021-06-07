@@ -10,11 +10,10 @@ build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = "^1.20.2"
+numpy = "^1.20.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
-ipython = "^7.22.0"
+pytest = "^6.0.0"
 Cython = {version = "3.0a7", allow-prereleases = true}
 
 [build-system]
