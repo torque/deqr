@@ -22,10 +22,8 @@ cimport cython
 
 import enum
 
-import numpy as np
-
 from . cimport quircdecl
-from . import datatypes
+from . import datatypes, image
 
 from libc.string cimport memcpy
 from libc.stdio cimport printf, fopen, fwrite, fclose, FILE
@@ -47,14 +45,16 @@ cdef class QRDecoder:
         if quircdecl.quirc_resize(self._chndl, width, height) == -1:
             raise MemoryError
 
-    def decode(self, image: np.ndarray):
+    def decode(self, image_data, binarize: bool = False):
         cdef int idx = 0
         cdef quircdecl.quirc_code code
         cdef quircdecl.quirc_data data
 
         decoded: list[datatypes.QRCode] = []
 
-        for idx in range(self.set_image(image)):
+        img = image.ImageLoader(image_data)
+
+        for idx in range(self._set_image(img.data, img.width, img.height)):
             quircdecl.quirc_extract(self._chndl, idx, &code)
             quircdecl.quirc_decode(&code, &data)
 
@@ -76,19 +76,6 @@ cdef class QRDecoder:
             )
 
         return decoded
-
-    def set_image(self, image: np.ndarray):
-        assert image.dtype == np.uint8
-        if len(image.shape) > 2:
-            # TODO: throwing out channels like this is wrong
-            image = image[:,:,0]
-
-
-        cdef int width = image.shape[1], height = image.shape[0]
-        cdef quircdecl.uint8[::1] reshaped = np.ascontiguousarray(
-            image.reshape(width*height)
-        )
-        return self._c_set_image(reshaped, width, height);
 
     cdef quircdecl.quirc_point compute_center_from_bounds(self, quircdecl.quirc_point corners[4]) nogil:
         cdef int divisor = 0
@@ -117,8 +104,7 @@ cdef class QRDecoder:
                 ) // divisor
             )
 
-    cdef int _c_set_image(self, quircdecl.uint8[::1] image, int width, int height) nogil:
-
+    cdef int _set_image(self, quircdecl.uint8[::1] image, int width, int height) nogil:
         if quircdecl.quirc_resize(self._chndl, width, height) != quircdecl.QUIRC_SUCCESS:
             raise MemoryError("could not resize")
 

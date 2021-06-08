@@ -22,10 +22,8 @@ cimport cython
 
 import enum
 
-import numpy as np
-
 from . cimport qrdecdecl
-from . import datatypes
+from . import datatypes, image
 
 from libc.string cimport memcpy
 from libc.stdio cimport printf, fopen, fwrite, fclose, FILE
@@ -50,29 +48,22 @@ cdef class QRDecoder:
         if self._chndl is not NULL:
             qrdecdecl.qr_reader_free(self._chndl)
 
-    def decode(self, image: np.ndarray):
+    def decode(self, image_data, binarize: bool = False):
         cdef qrdecdecl.qr_code_data_list qrlist
 
-        assert image.dtype == np.uint8
-        if len(image.shape) > 2:
-            # TODO: throwing out channels like this is wrong
-            image = image[:,:,0]
-
-
-        cdef int width = image.shape[1], height = image.shape[0]
-        cdef qrdecdecl.uint8[::1] reshaped = np.ascontiguousarray(
-            image.reshape(width*height)
-        )
+        img = image.ImageLoader(image_data)
 
         qrdecdecl.qr_code_data_list_init(&qrlist)
 
+        cdef qrdecdecl.uint8[::1] imagebytes = img.data
         cdef int idx = 0
         cdef qrdecdecl.qr_code_data *code
         decoded: list[datatypes.QRCode] = []
+
         try:
             for idx in range(
                 qrdecdecl.qr_reader_locate(
-                    self._chndl, &qrlist, &reshaped[0], width, height
+                    self._chndl, &qrlist, &imagebytes[0], img.width, img.height
                 )
             ):
                 code = qrlist.qrdata + idx
