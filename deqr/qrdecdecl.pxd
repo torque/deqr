@@ -113,6 +113,3 @@ cdef extern from "qrcode.h":
         int _allow_partial_sa
     ) nogil
     void qr_text_list_free(char **_text, int _ntext) nogil
-
-cdef extern from "binarize.h":
-    void qr_binarize(unsigned char *_img, int _width, int _height)

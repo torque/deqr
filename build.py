@@ -14,6 +14,10 @@ def build(setup_kwargs: dict[str, Any]) -> None:
             Extension(
                 "deqr.qrdec",
                 sources=["deqr/qrdec.pyx"]
+            ),
+            Extension(
+                "deqr.binarize",
+                sources=["deqr/binarize.pyx"]
             )
         ],
         language_level=3,
