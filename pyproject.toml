@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deqr"
-version = "0.1.1"
+version = "0.1.2"
 description = "qr code decoding library"
 authors = ["torque <torque@users.noreply.github.com>"]
 license = "LGPL-2.1-or-later"
