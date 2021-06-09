@@ -22,7 +22,7 @@ cimport cython
 
 import enum
 
-from . cimport quircdecl
+from . cimport binarize as bnz, quircdecl
 from . import datatypes, image
 
 from libc.string cimport memcpy
@@ -45,7 +45,9 @@ cdef class QRDecoder:
         if quircdecl.quirc_resize(self._chndl, width, height) == -1:
             raise MemoryError
 
-    def decode(self, image_data, binarize: bool = False):
+    def decode(
+        self, image_data, binarize: bool = True, binarize_invert: bool = False
+    ):
         cdef int idx = 0
         cdef quircdecl.quirc_code code
         cdef quircdecl.quirc_data data
@@ -53,6 +55,9 @@ cdef class QRDecoder:
         decoded: list[datatypes.QRCode] = []
 
         img = image.ImageLoader(image_data)
+
+        if binarize:
+            bnz.binarize(img.data, img.width, img.height, binarize_invert)
 
         for idx in range(self._set_image(img.data, img.width, img.height)):
             quircdecl.quirc_extract(self._chndl, idx, &code)

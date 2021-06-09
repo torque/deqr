@@ -22,7 +22,7 @@ cimport cython
 
 import enum
 
-from . cimport qrdecdecl
+from . cimport binarize as bnz, qrdecdecl
 from . import datatypes, image
 
 from libc.string cimport memcpy
@@ -48,7 +48,9 @@ cdef class QRDecoder:
         if self._chndl is not NULL:
             qrdecdecl.qr_reader_free(self._chndl)
 
-    def decode(self, image_data, binarize: bool = False):
+    def decode(
+        self, image_data, binarize: bool = True, binarize_invert: bool = True
+    ):
         cdef qrdecdecl.qr_code_data_list qrlist
 
         img = image.ImageLoader(image_data)
@@ -59,6 +61,9 @@ cdef class QRDecoder:
         cdef int idx = 0
         cdef qrdecdecl.qr_code_data *code
         decoded: list[datatypes.QRCode] = []
+
+        if binarize:
+            bnz.binarize(img.data, img.width, img.height, binarize_invert)
 
         try:
             for idx in range(
