@@ -7,6 +7,10 @@ license = "LGPL-2.1-or-later"
 readme = "README.md"
 repository = "https://github.com/torque/deqr"
 build = "build.py"
+include = [
+    "deps/qrdec/src",
+    "deps/quirc/lib",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
