@@ -72,7 +72,11 @@ cdef class QRDecoder:
                 )
             ):
                 code = qrlist.qrdata + idx
-                corners = tuple((corner[0], corner[1]) for corner in code.bbox)
+                corners = tuple(
+                    (code.bbox[idx][0], code.bbox[idx][1])
+                    for idx in (0, 1, 3, 2)
+                )
+
                 data_entries = tuple(
                     datatypes.QRCodeData(
                         entry.mode,
