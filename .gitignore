@@ -1,6 +1,7 @@
 *.c
 __pycache__/
-build
+build/
+_build/
 *.egg-info/
 *.so
 *.dylib

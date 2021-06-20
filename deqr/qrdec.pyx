@@ -32,7 +32,21 @@ QREccLevelMap = {
     3: datatypes.QREccLevel.H,
 }
 
-cdef class QRDecoder:
+cdef class QRdecDecoder:
+    """
+    QR code decoder using the QRdec backend.
+
+    .. note::
+
+        This decoder requires that input images have inverted reflectance in
+        order to be able to decode them. The binarization defaults
+        on :meth:`decode` handle performing this inversion, but if either
+        binarization or the inversion is disabled, images will not be decoded
+        properly without preprocessing.
+
+    :raises MemoryError: if the QR code reader context allocation fails.
+    """
+
     cdef qrdecdecl.qr_reader *_chndl
 
     def __cinit__(self):
@@ -46,7 +60,40 @@ cdef class QRDecoder:
 
     def decode(
         self, image_data, binarize: bool = True, binarize_invert: bool = True
-    ):
+    ) -> list[datatypes.QRCode]:
+        """
+        Decode all detectable QR codes in an image.
+
+        .. warning::
+
+            Binarization is done in-place on the image data buffer and
+            changes the data. While this operation should be idempotent, it
+            mutates the input data, which is a side effect.
+
+            Additionally, inverting during binarization is also done in-place on
+            the image data buffer and is *not* idempotent, so if image data is
+            reused, it will be re-inverted and not decode correctly the second
+            time.
+
+        :param image_data:
+            A python object containing the pixel data of the image to search for
+            QR codes. This can be any format supported
+            by :class:`image.ImageLoader`.
+
+        :param binarize:
+            If True, binarize the input image (i.e. convert all pixels to either
+            fully black or fully white). The decoder is unlikely to work
+            properly on images that have not been binarized. Defaults to True.
+
+        :param binarize_invert:
+            If True, binarization inverts the reflectance (i.e dark pixels
+            become white and light pixels become black).
+
+        :return: A list of decoded qr codes.
+
+        :raises TypeError: if `image_data` is of an unsupported type.
+        :raises ValueError: if `image_data` is malformed somehow.
+        """
         cdef qrdecdecl.qr_code_data_list qrlist
 
         if not isinstance(image_data, image.ImageLoader):

@@ -1,4 +1,4 @@
-__version__ = '0.1.0'
-
-from .quirc import QRDecoder as QuircDecoder
-from .qrdec import QRDecoder as QRdecDecoder
+from . import image, datatypes
+from .datatypes import QREccLevel, QRDataType, QRCodeData, QRCode
+from .quirc import QuircDecoder
+from .qrdec import QRdecDecoder

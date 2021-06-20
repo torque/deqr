@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "deqr"
-version = "0.1.2"
+version = "0.1.3"
 description = "qr code decoding library"
 authors = ["torque <torque@users.noreply.github.com>"]
 license = "LGPL-2.1-or-later"
@@ -18,6 +18,11 @@ python = "^3.8"
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.0"
 Cython = {version = "3.0a7", allow-prereleases = true}
+
+# documentation
+Sphinx = "^4.0.0"
+sphinx-copybutton = "^0.3.3"
+furo = "^2021.6.18-beta.36"
 
 [build-system]
 requires = [
