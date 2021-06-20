@@ -1,13 +1,11 @@
 from __future__ import annotations
-from typing import Any
-
-from . import binarize
+from typing import Any, Union
 
 
 class ImageLoader:
     width: int
     height: int
-    data: Any
+    data: Union[bytearray, numpy.ndarray]
 
     def __init__(self, data: Any):
         try:
@@ -15,7 +13,7 @@ class ImageLoader:
                 self.set_data_from_numpy_ndarray(data)
             elif "cv2.UMat" in str(type(data)):
                 self.set_data_from_numpy_ndarray(data.get())
-            elif "PIL.Image" in str(type(data)):
+            elif "PIL." in str(type(data)):
                 self.set_data_from_pil_image(data)
             elif isinstance(data, tuple):
                 self.set_data_from_tuple(data)
@@ -46,13 +44,13 @@ class ImageLoader:
         if data.mode != "L":
             data = data.convert("L")
 
-        self.data = data.tobytes()
+        self.data = bytearray(data.tobytes())
         self.width, self.height = data.size
 
     def set_data_from_tuple(self, data):
         if (
             len(data) != 2
-            or not isinstance(data[0], bytes)
+            or not isinstance(data[0], (bytes, bytearray))
             or len(data[1]) != 2
             or not isinstance(data[1][0], int)
             or not isinstance(data[1][1], int)
@@ -65,4 +63,5 @@ class ImageLoader:
                 f"{data[1][0]} by {data[1][1]} image"
             )
 
-        (self.data, (self.width, self.height)) = data
+        self.data = bytearray(data[0])
+        self.width, self.height = data[1]
