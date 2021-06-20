@@ -12,10 +12,6 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# distutils: sources = ["deps/qrdec/src/bch15_5.c", "deps/qrdec/src/isaac.c", "deps/qrdec/src/qrdec.c", "deps/qrdec/src/rs.c", "deps/qrdec/src/util.c"]
-# distutils: include_dirs = ["deps/qrdec/src"]
-# distutils: extra_compile_args = ["-fdiagnostics-color=always"]
-
 from __future__ import annotations
 
 cimport cython

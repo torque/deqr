@@ -12,10 +12,6 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# distutils: sources = ["deps/qrdec/src/binarize.c"]
-# distutils: include_dirs = ["deps/qrdec/src"]
-# distutils: extra_compile_args = ["-fdiagnostics-color=always"]
-
 from . cimport binarize as bnz
 
 cdef extern void qr_binarize(unsigned char *_img, int _width, int _height, int invert) nogil

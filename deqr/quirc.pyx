@@ -12,10 +12,6 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# distutils: sources = ["deps/quirc/lib/decode.c", "deps/quirc/lib/identify.c", "deps/quirc/lib/quirc.c", "deps/quirc/lib/version_db.c"]
-# distutils: include_dirs = ["deps/quirc/lib"]
-# distutils: extra_compile_args = ["-fdiagnostics-color=always"]
-
 from __future__ import annotations
 
 cimport cython
