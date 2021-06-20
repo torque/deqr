@@ -49,22 +49,32 @@ cdef class QRDecoder:
     ):
         cdef qrdecdecl.qr_code_data_list qrlist
 
-        img = image.ImageLoader(image_data)
+        if not isinstance(image_data, image.ImageLoader):
+            image_data = image.ImageLoader(image_data)
 
         qrdecdecl.qr_code_data_list_init(&qrlist)
 
-        cdef qrdecdecl.uint8[::1] imagebytes = img.data
+        cdef qrdecdecl.uint8[::1] imagebytes = image_data.data
         cdef int idx = 0
         cdef qrdecdecl.qr_code_data *code
         decoded: list[datatypes.QRCode] = []
 
         if binarize:
-            bnz.binarize(img.data, img.width, img.height, binarize_invert)
+            bnz.binarize(
+                image_data.data,
+                image_data.width,
+                image_data.height,
+                binarize_invert,
+            )
 
         try:
             for idx in range(
                 qrdecdecl.qr_reader_locate(
-                    self._chndl, &qrlist, &imagebytes[0], img.width, img.height
+                    self._chndl,
+                    &qrlist,
+                    &imagebytes[0],
+                    image_data.width,
+                    image_data.height,
                 )
             ):
                 code = qrlist.qrdata + idx

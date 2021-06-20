@@ -50,12 +50,22 @@ cdef class QRDecoder:
 
         decoded: list[datatypes.QRCode] = []
 
-        img = image.ImageLoader(image_data)
+        if not isinstance(image_data, image.ImageLoader):
+            image_data = image.ImageLoader(image_data)
 
         if binarize:
-            bnz.binarize(img.data, img.width, img.height, binarize_invert)
+            bnz.binarize(
+                image_data.data,
+                image_data.width,
+                image_data.height,
+                binarize_invert
+            )
 
-        for idx in range(self._set_image(img.data, img.width, img.height)):
+        for idx in range(
+            self._set_image(
+                image_data.data, image_data.width, image_data.height
+            )
+        ):
             quircdecl.quirc_extract(self._chndl, idx, &code)
             quircdecl.quirc_decode(&code, &data)
 
