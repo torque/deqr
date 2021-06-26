@@ -35,3 +35,41 @@ html_show_sourcelink = False
 html_show_copyright = False
 html_show_sphinx = False
 html_codeblock_linenos_style = "table"
+
+from docutils import nodes
+from docutils.parsers.rst import directives
+from docutils.parsers.rst.directives import images
+from docutils.parsers.rst import Directive
+from sphinx.environment.collectors.asset import ImageCollector
+
+
+class GImage(images.Image):
+    image_prefix = "/deqr-docs/images/"
+
+    def run(self):
+        self.options["__gimage_uri__"] = self.arguments[0]
+        return super().run()
+
+class GFigure(images.Figure):
+    image_prefix = "/deqr-docs/images/"
+
+    def run(self):
+        self.options["__gimage_uri__"] = self.arguments[0]
+        return super().run()
+
+directives.register_directive("gimage", GImage)
+directives.register_directive("gfigure", GFigure)
+
+original_process_doc = ImageCollector.process_doc
+
+# this kind of precludes properly rendering this to PDF or non-html formats, but
+# I don't really care about doing that.
+def dont_mangle_my_damn_image_uris(self, app, doctree) -> None:
+    original_process_doc(self, app, doctree)
+
+    for node in doctree.traverse(nodes.image):
+        if (base_uri := node.attributes.get("__gimage_uri__")) is not None:
+            node["uri"] = GImage.image_prefix + base_uri
+
+
+ImageCollector.process_doc = dont_mangle_my_damn_image_uris
