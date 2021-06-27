@@ -105,7 +105,8 @@ cdef class QuircDecoder:
             )
         ):
             quircdecl.quirc_extract(self._chndl, idx, &code)
-            quircdecl.quirc_decode(&code, &data)
+            if quircdecl.quirc_decode(&code, &data) != quircdecl.QUIRC_SUCCESS:
+                continue
 
             data_entries = (
                 datatypes.QRCodeData(data.data_type, data.payload[:data.payload_len]),

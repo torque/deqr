@@ -43,6 +43,8 @@ cdef extern from "quirc.h":
         QUIRC_ERROR_DATA_OVERFLOW
         QUIRC_ERROR_DATA_UNDERFLOW
 
+    const char *quirc_strerror(quirc_decode_error_t err) nogil
+
     cdef enum:
         QUIRC_MAX_VERSION = 40
         QUIRC_MAX_GRID_SIZE = (QUIRC_MAX_VERSION * 4) + 17
