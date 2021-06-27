@@ -16,6 +16,6 @@ from . cimport binarize as bnz
 
 cdef extern void qr_binarize(unsigned char *_img, int _width, int _height, int invert) nogil
 
-cdef void binarize(bnz.uint8[::1] image, int width, int height, bint invert) nogil:
+cpdef void binarize(bnz.uint8[::1] image, int width, int height, bint invert) nogil:
     # this is in-place manipulation
     qr_binarize(&image[0], width, height, invert)

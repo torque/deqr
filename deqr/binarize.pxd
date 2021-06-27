@@ -14,4 +14,4 @@
 
 ctypedef unsigned char uint8
 
-cdef void binarize(uint8[::1] image, int width, int height, bint invert) nogil
+cpdef void binarize(uint8[::1] image, int width, int height, bint invert) nogil
