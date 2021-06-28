@@ -18,7 +18,6 @@ python = "^3.8"
 
 [tool.poetry.dev-dependencies]
 Cython = {version = "3.0a7", allow-prereleases = true}
-poetry-dynamic-versioning = "^0.13.0"
 
 # tests
 pytest = "^6.0.0"

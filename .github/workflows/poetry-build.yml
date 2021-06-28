@@ -20,13 +20,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          fetch-depth: 0
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip poetry
+          python -m pip install --upgrade pip poetry poetry-dynamic-versioning
           poetry install --no-root
       - name: Build
         run: |
@@ -61,7 +62,7 @@ jobs:
           submodules: recursive
       - name: Install dependencies
         run: |
-          ${PYBIN} -m pip install --upgrade pip poetry
+          ${PYBIN} -m pip install --upgrade pip poetry poetry-dynamic-versioning
           ${PYBIN} -m poetry config virtualenvs.create false
           ${PYBIN} -m poetry install --no-root
         env:

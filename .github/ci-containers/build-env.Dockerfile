@@ -11,3 +11,8 @@ RUN $PY39 -m pip install -U pip poetry pytest \
 COPY poetry.lock pyproject.toml ./
 RUN $PY38 -m poetry install --no-root
 RUN $PY39 -m poetry install --no-root
+
+# install this after the main project dependencies, so it doesn't barf when we
+# install from the pyproject.toml outside of the git repo.
+RUN $PY38 -m pip install -U pip poetry-dynamic-versioning
+RUN $PY39 -m pip install -U pip poetry-dynamic-versioning
