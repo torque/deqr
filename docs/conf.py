@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # We run this against the installed version
 import deqr
 
@@ -12,6 +14,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "sphinx_inline_tabs"
 ]
 
 # This prevents sphinx from truncating tuple type annotations like `tuple
@@ -35,6 +38,15 @@ html_show_sourcelink = False
 html_show_copyright = False
 html_show_sphinx = False
 html_codeblock_linenos_style = "table"
+html_sidebars = {
+    "**": [
+        "sidebar/scroll-start.html",
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/navigation.html",
+        "sidebar/scroll-end.html",
+    ]
+}
 
 from docutils import nodes
 from docutils.parsers.rst import directives
@@ -73,3 +85,26 @@ def dont_mangle_my_damn_image_uris(self, app, doctree) -> None:
 
 
 ImageCollector.process_doc = dont_mangle_my_damn_image_uris
+
+import furo
+
+def put_titles_in_the_nav_tree(context: Dict[str, Any]) -> str:
+    # The navigation tree, generated from the sphinx-provided ToC tree.
+    if "toctree" in context:
+        toctree = context["toctree"]
+        toctree_html = toctree(
+            collapse=False,
+            titles_only=False,
+            maxdepth=-1,
+            includehidden=True,
+        )
+    else:
+        toctree_html = ""
+
+    return furo.get_navigation_tree(toctree_html)
+
+def dont_show_toc(context: Dict[str, Any]) -> bool:
+    return True
+
+furo._compute_navigation_tree = put_titles_in_the_nav_tree
+furo._compute_hide_toc = dont_show_toc
