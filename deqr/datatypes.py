@@ -5,7 +5,8 @@ import enum
 
 class QREccLevel(enum.IntEnum):
     """
-    The QR code's error correction code (ECC) level.
+    An :py:class:`enum.IntEnum` representing the QR code's error correction
+    code (ECC) level.
 
     This value represents how much error correction data the QR code contains,
     which directly maps to how much of the code can be missing or occluded
@@ -30,10 +31,12 @@ class QREccLevel(enum.IntEnum):
 
 class QRDataType(enum.IntEnum):
     """
-    The type of data stored in a given QR code data segment.
+    An :py:class:`enum.IntEnum` representing the data storage format of a given
+    data section.
 
     QR codes can encode multiple different types of data with varying levels of
-    efficiency.
+    efficiency. An individual QR code can also contain multiple different data
+    sections, each with their own storage format.
 
     See Wikipedia__ for more information.
 

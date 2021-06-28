@@ -17,5 +17,16 @@ from . cimport binarize as bnz
 cdef extern void qr_binarize(unsigned char *_img, int _width, int _height, int invert) nogil
 
 cpdef void binarize(bnz.uint8[::1] image, int width, int height, bint invert) nogil:
-    # this is in-place manipulation
+    """
+    Binarize an image. Manipulation occurs in place, mutating the input data.
+
+    :param image: a memoryview to the bytes of an image.
+        For example, :attr:`deqr.image.ImageLoader.data`
+
+    :param width: the width, in pixels, of the input image.
+
+    :param height: the height, in pixels, of the input image.
+
+    :param invert: whether or not the output image should be light/dark inverted.
+    """
     qr_binarize(&image[0], width, height, invert)

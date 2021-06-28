@@ -21,12 +21,12 @@ class ImageLoader:
 
     .. warning::
 
-        Don't access any of the properties of this class after it has been
-        created. :attr:`ImageLoader.data` uses a different backing class
-        depending on the source type (:class:`numpy.ndarray` when coming from
-        numpy or OpenCV, :class:`bytearray` otherwise) and the QR code decoders
-        may do in-place manipulation of the data (e.g. the binarization routine
-        manipulates the data in place).
+        It is strongly discouraged to access any of the properties of this class
+        after it has been created. :attr:`ImageLoader.data` uses a different
+        backing class depending on the source type (:class:`numpy.ndarray` when
+        coming from numpy or OpenCV, :class:`bytearray` otherwise) and the QR
+        code decoders may do in-place manipulation of the data (e.g. the
+        binarization routine manipulates the data in place).
     """
 
     #: The width, in pixels, of the image data stored in :attr:`data`

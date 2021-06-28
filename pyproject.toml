@@ -6,6 +6,7 @@ authors = ["torque <torque@users.noreply.github.com>"]
 license = "LGPL-2.1-or-later"
 readme = "README.md"
 repository = "https://github.com/torque/deqr"
+documentation = "https://torque.github.io/deqr-docs/"
 build = "build.py"
 include = [
     "deps/qrdec/src",
