@@ -67,9 +67,9 @@ class QRCodeData:
         self.data = data
 
     def __str__(self):
-        return "QrCodeData(type=%s, data=<%s>)" % (
+        return "QrCodeData(type=%s, data=%s)" % (
             self.type,
-            self.data.hex(" ").upper(),
+            self.data,
         )
 
     def __repr__(self):

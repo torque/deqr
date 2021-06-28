@@ -13,6 +13,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from __future__ import annotations
+from typing import Optional
 
 cimport cython
 
@@ -59,7 +60,12 @@ cdef class QRdecDecoder:
             qrdecdecl.qr_reader_free(self._chndl)
 
     def decode(
-        self, image_data, binarize: bool = True, binarize_invert: bool = True
+        self,
+        image_data,
+        binarize: bool = True,
+        binarize_invert: bool = True,
+        convert_data: bool = True,
+        byte_charset: Optional[str] = "utf-8"
     ) -> list[datatypes.QRCode]:
         """
         Decode all detectable QR codes in an image.
@@ -81,18 +87,41 @@ cdef class QRdecDecoder:
             by :class:`image.ImageLoader`.
 
         :param binarize:
-            If True, binarize the input image (i.e. convert all pixels to either
-            fully black or fully white). The decoder is unlikely to work
-            properly on images that have not been binarized. Defaults to True.
+            If ``True``, binarize the input image (i.e. convert all
+            pixels to either fully black or fully white). The decoder is
+            unlikely to work properly on images that have not been binarized.
 
         :param binarize_invert:
-            If True, binarization inverts the reflectance (i.e dark pixels
+            If ``True``, binarization inverts the reflectance (i.e dark pixels
             become white and light pixels become black).
 
-        :return: A list of decoded qr codes.
+        :param convert_data:
+            If ``True``, all data entry payloads are  decoded into
+            "native" python types:
 
-        :raises TypeError: if `image_data` is of an unsupported type.
-        :raises ValueError: if `image_data` is malformed somehow.
+            - :py:obj:`datatypes.QRDataType.NUMERIC` => :py:class:`int`,
+            - :py:obj:`datatypes.QRDataType.ALPHANUMERIC` =>
+              :py:class:`str` as ``ascii``
+            - :py:obj:`datatypes.QRDataType.KANJI` =>
+              :py:class:`str` as ``shift-jis``
+            - :py:obj:`datatypes.QRDataType.BYTE` =>
+              :py:class:`str` using the ``byte_charset`` parameter
+
+            If ``False``, no conversion will be done and all data entry data
+            will be returned as :py:class:`bytes`.
+
+        :param byte_charset:
+            The charset to use for converting all decoded data entries of type
+            :py:obj:`datatypes.QRDataType.BYTE` found in the image. If
+            ``None``, then data entries of type
+            :py:obj:`datatypes.QRDataType.BYTE` will not be converted,
+            even if ``convert_data`` is ``True``.
+
+        :return: A list of objects containing information from the decoded QR
+            codes.
+
+        :raises TypeError: if ``image_data`` is of an unsupported type.
+        :raises ValueError: if ``image_data`` is malformed somehow.
         """
         cdef qrdecdecl.qr_code_data_list qrlist
 
@@ -114,6 +143,19 @@ cdef class QRdecDecoder:
                 binarize_invert,
             )
 
+        if convert_data:
+            if byte_charset is not None:
+                byte_converter = lambda d: d.decode(byte_charset)
+            else:
+                byte_converter = lambda d: d
+
+            converters = {
+                datatypes.QRDataType.NUMERIC: int,
+                datatypes.QRDataType.ALPHANUMERIC: lambda d: d.decode("ascii"),
+                datatypes.QRDataType.KANJI: lambda d: d.decode("shift-jis"),
+                datatypes.QRDataType.BYTE: byte_converter,
+            }
+
         try:
             for idx in range(
                 qrdecdecl.qr_reader_locate(
@@ -133,12 +175,15 @@ cdef class QRdecDecoder:
                 data_entries = tuple(
                     datatypes.QRCodeData(
                         entry.mode,
-                        entry.payload.data.buf[:entry.payload.data.len]
+                        entry.payload.data.buf[:entry.payload.data.len],
                     )
                     for entry in code.entries[:code.nentries]
                     if qrdecdecl.QR_MODE_HAS_DATA(entry.mode)
                 )
 
+                if convert_data:
+                    for entry in data_entries:
+                        entry.data = converters[entry.type](entry.data)
 
                 decoded.append(
                     datatypes.QRCode(

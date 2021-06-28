@@ -13,6 +13,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 from __future__ import annotations
+from typing import Optional
 
 cimport cython
 
@@ -45,7 +46,12 @@ cdef class QuircDecoder:
 
 
     def decode(
-        self, image_data, binarize: bool = True, binarize_invert: bool = False
+        self,
+        image_data,
+        binarize: bool = True,
+        binarize_invert: bool = False,
+        convert_data: bool = True,
+        byte_charset: Optional[str] = "utf-8"
     ):
         """
         Decode all detectable QR codes in an image.
@@ -67,19 +73,41 @@ cdef class QuircDecoder:
             by :class:`image.ImageLoader`.
 
         :param binarize:
-            If True, binarize the input image (i.e. convert all pixels to either
-            fully black or fully white). The decoder is unlikely to work
-            properly on images that have not been binarized. Defaults to True.
+            If ``True``, binarize the input image (i.e. convert all
+            pixels to either fully black or fully white). The decoder is
+            unlikely to work properly on images that have not been binarized.
 
         :param binarize_invert:
-            If True, binarization inverts the reflectance (i.e dark pixels
+            If ``True``, binarization inverts the reflectance (i.e dark pixels
             become white and light pixels become black).
 
-        :return: A list of decoded qr codes.
+        :param convert_data:
+            If ``True``, all data entry payloads are  decoded into
+            "native" python types:
+
+            - :py:obj:`deqr.datatypes.QRDataType.NUMERIC` => :py:class:`int`,
+            - :py:obj:`deqr.datatypes.QRDataType.ALPHANUMERIC` =>
+              :py:class:`str` as ``ascii``
+            - :py:obj:`deqr.datatypes.QRDataType.KANJI` =>
+              :py:class:`str` as ``shift-jis``
+            - :py:obj:`deqr.datatypes.QRDataType.BYTE` =>
+              :py:class:`str` using the ``byte_charset`` parameter
+
+            If ``False``, no conversion will be done and all data entry data
+            will be returned as :py:class:`bytes`.
+
+        :param byte_charset:
+            The charset to use for converting all decoded data entries of type
+            :py:obj:`deqr.datatypes.QRDataType.BYTE` found in the image. If ``None``,
+            then data entries of type :py:obj:`deqr.datatypes.QRDataType.BYTE` will not be
+            converted, even if ``convert_data`` is ``True``.
+
+        :return: A list of objects containing information from the decoded QR
+            codes.
 
         :raises MemoryError: if the decoder image buffer allocation fails.
-        :raises TypeError: if `image_data` is of an unsupported type.
-        :raises ValueError: if `image_data` is malformed somehow.
+        :raises TypeError: if ``image_data`` is of an unsupported type.
+        :raises ValueError: if ``image_data`` is malformed somehow.
         """
 
         cdef int idx = 0
@@ -99,6 +127,19 @@ cdef class QuircDecoder:
                 binarize_invert
             )
 
+        if convert_data:
+            if byte_charset is not None:
+                byte_converter = lambda d: d.decode(byte_charset)
+            else:
+                byte_converter = lambda d: d
+
+            converters = {
+                datatypes.QRDataType.NUMERIC: int,
+                datatypes.QRDataType.ALPHANUMERIC: lambda d: d.decode("ascii"),
+                datatypes.QRDataType.KANJI: lambda d: d.decode("shift-jis"),
+                datatypes.QRDataType.BYTE: byte_converter,
+            }
+
         for idx in range(
             self._set_image(
                 image_data.data, image_data.width, image_data.height
@@ -111,6 +152,10 @@ cdef class QuircDecoder:
             data_entries = (
                 datatypes.QRCodeData(data.data_type, data.payload[:data.payload_len]),
             )
+
+            if convert_data:
+                for entry in data_entries:
+                    entry.data = converters[entry.type](entry.data)
 
             center = self.compute_center_from_bounds(code.corners)
 
