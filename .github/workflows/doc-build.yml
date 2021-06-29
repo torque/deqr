@@ -5,6 +5,7 @@ on:
     branches: [master]
     tags: ["*"]
 
+concurrency: doc_build
 
 jobs:
   build:
@@ -38,23 +39,27 @@ jobs:
       - name: Environment variable fiddling (branch)
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/heads/}" >> ${GITHUB_ENV}
+          printf "%s=%s\n" COMMIT_REF ${{ github.sha }} >> ${GITHUB_ENV}
+          printf "%s=%s\n" LINK_NAME latest-dev >> ${GITHUB_ENV}
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
       - name: Environment variable fiddling (tag)
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
+          printf "%s=%s\n" COMMIT_REF "${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
+          printf "%s=%s\n" LINK_NAME latest >> ${GITHUB_ENV}
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
       - name: Publish documentation
         run: |
           git clone https://${{ secrets.DOC_PUBLISH_USER }}:${{ secrets.DOC_PUBLISH_TOKEN }}@github.com/torque/deqr-docs.git
           rm -rf deqr-docs/${BRANCH_NAME}
           cp -a docs/_build/html/ deqr-docs/${BRANCH_NAME}
-          rm -f deqr-docs/latest
+          rm -f deqr-docs/${LINK_NAME}
           cd deqr-docs
           git config user.name ${{ secrets.DOC_PUBLISH_USER }}
           git config user.email ${{ secrets.DOC_PUBLISH_USER }}@users.noreply.github.com
-          ln -s ${BRANCH_NAME} latest
-          git add latest ${BRANCH_NAME}
-          git commit -m 'Commit ${{ github.repository }}@${{ github.sha }}'
+          ln -s ${BRANCH_NAME} ${LINK_NAME}
+          git add ${LINK_NAME} ${BRANCH_NAME}
+          git commit -m "Commit ${{ github.repository }}@${COMMIT_REF}"
           git push origin
       - name: Cleanup
         if: ${{ always() }}
