@@ -17,7 +17,7 @@ include = [
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-Cython = {version = "3.0a7", allow-prereleases = true}
+Cython = {version = "3.0.0a9", allow-prereleases = true}
 
 # tests
 pytest = "^6.0.0"
@@ -43,7 +43,7 @@ patterns = ["(^__version__\\s+=\\s+['\"])__PLACEHOLDER__(['\"])"]
 
 [build-system]
 requires = [
-    "cython==3.0a7",
+    "cython==3.0.0a9",
     "poetry-core>=1.0.0",
     "poetry-dynamic-versioning>=0.13.0",
     "setuptools>=40.9.0",
