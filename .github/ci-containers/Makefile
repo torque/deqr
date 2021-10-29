@@ -1,4 +1,4 @@
-DOCKER_REGISTRY := docker.pkg.github.com
+DOCKER_REGISTRY := ghcr.io
 DOCKER_PROJECT := torque/deqr
 
 ARCHITECTURES := aarch64 x86_64

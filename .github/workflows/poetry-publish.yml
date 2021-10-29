@@ -59,7 +59,7 @@ jobs:
   build-wheels-linux:
     runs-on: ${{ matrix.platform }}
     container:
-      image: docker.pkg.github.com/torque/deqr/linux-build:${{ matrix.arch }}
+      image: ghcr.io/torque/deqr/linux-build:${{ matrix.arch }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

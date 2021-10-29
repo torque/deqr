@@ -13,7 +13,7 @@ jobs:
     env:
       PYBIN: /opt/python/${{ matrix.python_version }}/bin/python
     container:
-      image: "docker.pkg.github.com/torque/deqr/linux-build:x86_64"
+      image: "ghcr.io/torque/deqr/linux-build:x86_64"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
