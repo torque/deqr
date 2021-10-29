@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
-        python-version: [3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
       - name: Checkout
@@ -72,6 +72,7 @@ jobs:
         python_version:
           - "cp38-cp38"
           - "cp39-cp39"
+          - "cp310-cp310"
         include:
           - platform: [self-hosted, linux, ARM64]
             arch: aarch64
