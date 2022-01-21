@@ -6,6 +6,14 @@ Getting Started
 If you already have an image containing a QR code that you'd like to decode, the
 process is pretty straightforward.
 
+Installation
+------------
+
+``deqr`` is published on PyPi with pre-built binaries for common platforms and
+modern Python versions. It can be installed with ``pip``::
+
+    pip install deqr
+
 A Basic Exmaple
 ---------------
 
