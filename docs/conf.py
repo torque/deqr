@@ -4,8 +4,9 @@ from __future__ import annotations
 import deqr
 
 project = "deqr"
-copyright = "2021"
+copyright = "2022"
 author = "torque"
+github_url = "https://github.com/torque/deqr"
 
 version = deqr.__version__
 release = deqr.__version__
