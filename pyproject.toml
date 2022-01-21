@@ -17,18 +17,18 @@ include = [
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-Cython = {version = "3.0.0a9", allow-prereleases = true}
+Cython = {version = "3.0.0a10", allow-prereleases = true}
 
 # tests
 pytest = "^6.0.0"
-Pillow = "^8.2.0"
-numpy = "^1.20.3"
+Pillow = ">=8.0.0"
+numpy = ">=1.20.0"
 
 # documentation
 Sphinx = "^4.0.0"
-sphinx-copybutton = "^0.3.3"
-furo = "^2021.6.18-beta.36"
-sphinx-inline-tabs = "^2021.4.11-beta.9"
+sphinx-copybutton = "^0.4.0"
+furo = "^2022.1.2"
+sphinx-inline-tabs = ">=2022.1.2-beta.11"
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -43,7 +43,7 @@ patterns = ["(^__version__\\s+=\\s+['\"])__PLACEHOLDER__(['\"])"]
 
 [build-system]
 requires = [
-    "cython==3.0.0a9",
+    "cython==3.0.0a10",
     "poetry-core>=1.0.0",
     "poetry-dynamic-versioning>=0.13.0",
     "setuptools>=40.9.0",
