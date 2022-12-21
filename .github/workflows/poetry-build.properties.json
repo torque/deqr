@@ -1,6 +1,0 @@
-{
-    "name": "Build with Poetry",
-    "description": "Test building the native extension using Poetry",
-    "iconName": "python",
-    "categories": ["Python"]
-}

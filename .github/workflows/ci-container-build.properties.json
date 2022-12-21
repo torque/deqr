@@ -1,6 +1,0 @@
-{
-    "name": "build CI containers",
-    "description": "Build a CI container with some dependencies",
-    "iconName": "python",
-    "categories": ["Python"]
-}

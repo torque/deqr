@@ -32,6 +32,7 @@ $(BUILD_ENV_IMAGES): IMG_ARCHITECTURE = $(call GET_ARCHITECTURE,$@)
 $(BUILD_ENV_IMAGES):
 	docker pull quay.io/pypa/manylinux_2_24_$(IMG_ARCHITECTURE):latest
 	docker build \
+		--progress=plain \
 		-f "build-env.Dockerfile" \
 		--build-arg "ARCHITECTURE=$(IMG_ARCHITECTURE)" \
 		-t "$(call FIX_TAG_FOR_DOCKER,$@)" ../..

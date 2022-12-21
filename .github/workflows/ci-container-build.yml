@@ -7,12 +7,6 @@ on:
       - ".github/ci-containers/**"
       - "poetry.lock"
       - ".github/ci-container-build.yml"
-  pull_request:
-    branches: [master]
-    paths:
-      - ".github/ci-containers/**"
-      - "poetry.lock"
-      - ".github/ci-container-build.yml"
 
 jobs:
   build-x86_64-ci-containers:
@@ -20,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Build images
         run: make x86_64
         working-directory: .github/ci-containers
@@ -34,14 +28,27 @@ jobs:
         working-directory: .github/ci-containers
 
   build-aarch64-ci-containers:
+    defaults: {run: {working-directory: deqr-containerbuild/.github/ci-containers}}
     runs-on: [self-hosted, linux, ARM64]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+        # NOTE: github actions handles container builds in perhaps the stupidest way
+        #       possible, by bind-mounting the host-side runner workdir directly into
+        #       the container and then running all actions there. This has a lot of
+        #       problems with permissions, and causes a lot of other issues. It's
+        #       directly incompatible with the container build workflow, which is
+        #       cloned on the host and therefore has host ownership. We work around
+        #       this here by having this workflow clone to a separate directory. Note
+        #       also that git recently added ownership checks to work around issues
+        #       with malicious repositories in shared workspaces, which can result in
+        #       git refusing to run properly in the container or on the host if the
+        #       checkout was originally done by a different user.
+        with:
+          path: deqr-containerbuild
       - name: Build images
         run: make aarch64
-        working-directory: .github/ci-containers
       - name: Push images
         run: |
           echo ${GITHUB_TOKEN} | docker login -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} --password-stdin ghcr.io
@@ -49,4 +56,3 @@ jobs:
           docker logout ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: .github/ci-containers

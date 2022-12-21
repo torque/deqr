@@ -9,33 +9,28 @@ concurrency: doc_build
 
 jobs:
   build:
+    defaults: {run: {working-directory: deqr-docbuild}}
     runs-on: ubuntu-latest
-    env:
-      PYBIN: /opt/python/${{ matrix.python_version }}/bin/python
     container:
       image: "ghcr.io/torque/deqr/linux-build:x86_64"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    strategy:
-      fail-fast: false
-      matrix:
-        python_version: ["cp39-cp39"]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
           submodules: recursive
+          fetch-depth: 0
+          path: deqr-docbuild
       - name: Build and install
         run: |
-          ${PYBIN} -m pip install --upgrade pip poetry
-          ${PYBIN} -m poetry config virtualenvs.create false
-          ${PYBIN} -m poetry install
+          "${POETRY}" self add "poetry-dynamic-versioning[plugin]"
+          . "${VE311}"/bin/activate && "${POETRY}" install
       - name: Generate documentation
         run: |
-          ${PYBIN} -m poetry build
-          ${PYBIN} -m sphinx -M html docs docs/_build
+          "${VE311}"/bin/python -m sphinx -M html docs docs/_build
       - name: Environment variable fiddling (branch)
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/heads/}" >> ${GITHUB_ENV}

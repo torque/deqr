@@ -1,4 +1,4 @@
-name: Build with Poetry
+name: Test
 
 on:
   push:
@@ -13,27 +13,31 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
           fetch-depth: 0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip poetry poetry-dynamic-versioning
-          poetry install --no-root
+          python -m pip install --upgrade pip build
       - name: Build
+        # have to use -I here because otherwise python will pick up build.py because
+        # python does very stupid things with its import path. -P would be the more
+        # proper flag, but that doesn't exist until 3.11, so it's not generally
+        # useful.
         run: |
-          poetry build
+          python -Im build
 
   build-linux:
+    defaults: {run: {working-directory: deqr-build}}
     runs-on: ${{ matrix.platform }}
     container:
       image: ghcr.io/torque/deqr/linux-build:${{ matrix.arch }}
@@ -46,10 +50,6 @@ jobs:
         platform:
           - [self-hosted, linux, ARM64]
           - ubuntu-latest
-        python_version:
-          - "cp38-cp38"
-          - "cp39-cp39"
-          - "cp310-cp310"
         include:
           - platform: [self-hosted, linux, ARM64]
             arch: aarch64
@@ -58,20 +58,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
         with:
           submodules: recursive
-      - name: Install dependencies
-        run: |
-          ${PYBIN} -m pip install --upgrade pip poetry poetry-dynamic-versioning
-          ${PYBIN} -m poetry config virtualenvs.create false
-          ${PYBIN} -m poetry install --no-root
-        env:
-          PYBIN: /opt/python/${{ matrix.python_version }}/bin/python
+          fetch-depth: 0
+          path: deqr-build
+      # The container already all of the python versions in it and dependencies
+      # installed, so we can just shotgun this.
       - name: Build
-        run: ${PYBIN} -m poetry build
-        env:
-          PYBIN: /opt/python/${{ matrix.python_version }}/bin/python
+        run: |
+          "${PY38}" -Im build
+          "${PY39}" -Im build
+          "${PY310}" -Im build
+          "${PY311}" -Im build
       - name: Cleanup
         if: ${{ always() }}
         run: git clean -fdx
