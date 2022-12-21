@@ -17,15 +17,15 @@ include = [
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-Cython = {version = "3.0.0a10", allow-prereleases = true}
+Cython = {version = "3.0.0a11", allow-prereleases = true}
 
 # tests
-pytest = "^6.0.0"
+pytest = ">=7.0.0"
 Pillow = ">=8.0.0"
 numpy = ">=1.20.0"
 
 # documentation
-Sphinx = "^4.0.0"
+sphinx = "^4.0.0"
 sphinx-copybutton = "^0.4.0"
 furo = "^2022.1.2"
 sphinx-inline-tabs = ">=2022.1.2-beta.11"
@@ -43,10 +43,10 @@ patterns = ["(^__version__\\s+=\\s+['\"])__PLACEHOLDER__(['\"])"]
 
 [build-system]
 requires = [
-    "cython==3.0.0a10",
+    "cython==3.0.0a11",
     "poetry-core>=1.0.0",
-    "poetry-dynamic-versioning>=0.13.0",
+    "poetry-dynamic-versioning>=0.18.0",
     "setuptools>=40.9.0",
     "wheel",
 ]
-build-backend = "poetry.core.masonry.api"
+build-backend = "poetry_dynamic_versioning.backend"
