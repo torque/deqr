@@ -86,26 +86,3 @@ def dont_mangle_my_damn_image_uris(self, app, doctree) -> None:
 
 
 ImageCollector.process_doc = dont_mangle_my_damn_image_uris
-
-import furo
-
-def put_titles_in_the_nav_tree(context: Dict[str, Any]) -> str:
-    # The navigation tree, generated from the sphinx-provided ToC tree.
-    if "toctree" in context:
-        toctree = context["toctree"]
-        toctree_html = toctree(
-            collapse=False,
-            titles_only=False,
-            maxdepth=-1,
-            includehidden=True,
-        )
-    else:
-        toctree_html = ""
-
-    return furo.get_navigation_tree(toctree_html)
-
-def dont_show_toc(context: Dict[str, Any]) -> bool:
-    return True
-
-furo._compute_navigation_tree = put_titles_in_the_nav_tree
-furo._compute_hide_toc = dont_show_toc
