@@ -12,5 +12,6 @@ QR code decoding for fun and profit.
    :caption: Development
    :hidden:
 
+   How-To <development>
    Git Repository <https://github.com/torque/deqr>
    Bug Tracker <https://github.com/torque/deqr/issues>
