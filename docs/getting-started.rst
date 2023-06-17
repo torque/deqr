@@ -69,8 +69,7 @@ alphanumeric, byte, and kanji.
 
 
 These examples have virtually identical outputs (the bounding box computation
-varies slightly between the decoders, and the ordering of the output list isn't
-guaranteed to be consistent between the two)::
+varies slightly between the decoders)::
 
     decoded_codes = [
         QRCode(
