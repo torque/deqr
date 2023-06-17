@@ -1,6 +1,7 @@
 name: Build CI container
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
     paths:
