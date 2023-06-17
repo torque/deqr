@@ -54,8 +54,9 @@ jobs:
           git config user.email ${{ secrets.DOC_PUBLISH_USER }}@users.noreply.github.com
           ln -s ${BRANCH_NAME} ${LINK_NAME}
           git add ${LINK_NAME} ${BRANCH_NAME}
-          git commit -m "Commit ${{ github.repository }}@${COMMIT_REF}"
-          git push origin
+          if git commit -m "Commit ${{ github.repository }}@${COMMIT_REF}"; then
+            git push origin
+          fi
       - name: Cleanup
         if: ${{ always() }}
         run: |
