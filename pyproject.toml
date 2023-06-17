@@ -7,7 +7,7 @@ license = "LGPL-2.1-or-later"
 readme = "README.md"
 repository = "https://github.com/torque/deqr"
 documentation = "https://torque.github.io/deqr-docs/"
-build = "build.py"
+build = {script = "build.py", generate-setup-file = true}
 include = [
     {path = "deps/qrdec/src", format = "sdist"},
     {path = "deps/quirc/lib", format = "sdist"}
@@ -33,7 +33,7 @@ sphinx-inline-tabs = ">=2022.1.2-beta.11"
 [build-system]
 requires = [
     "cython==3.0.0b3",
-    "poetry-core>=1.0.0",
+    "poetry-core>=1.6.0,<1.7.0",
     "setuptools>=40.9.0",
     "wheel",
 ]
