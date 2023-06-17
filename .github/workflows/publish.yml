@@ -93,13 +93,40 @@ jobs:
           "${PY311}" .github/workflows/version_check.py "deqr/__init__.py" "$("${POETRY}" version -s)"
       - name: Build
         run: |
+          echo "::group::Build for Python 3.8"
           "${PY38}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.8 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.9"
           "${PY39}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.9 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.10"
           "${PY310}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.10 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.11"
           "${PY311}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.11 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
       - name: Publish
         run: |
-          "${POETRY}" publish --username="${{ secrets.PYPI_USERNAME}}" --password="${{ secrets.PYPI_PASSWORD }}"
+          "${POETRY}" publish --username="${{ secrets.PYPI_USERNAME }}" --password="${{ secrets.PYPI_PASSWORD }}"
       - name: Cleanup
         if: ${{ always() }}
         run: git clean -fdx

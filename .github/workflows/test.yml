@@ -73,10 +73,37 @@ jobs:
       # installed, so we can just shotgun this.
       - name: Build
         run: |
+          echo "::group::Build for Python 3.8"
           "${PY38}" -Im build
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.8 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.9"
           "${PY39}" -Im build
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.9 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.10"
           "${PY310}" -Im build
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.10 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.11"
           "${PY311}" -Im build
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.11 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
       - name: Cleanup
         if: ${{ always() }}
         run: git clean -fdx
