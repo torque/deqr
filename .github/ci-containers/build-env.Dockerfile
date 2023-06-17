@@ -1,7 +1,7 @@
-ARG ARCHITECTURE=x86_64
-FROM quay.io/pypa/manylinux_2_24_$ARCHITECTURE:latest
+ARG ARCHITECTURE=2_28_x86_64
+FROM quay.io/pypa/manylinux_$ARCHITECTURE:latest
 
-RUN apt-get update && apt-get install -y build-essential git libffi-dev libssl-dev curl unzip rustc cargo
+RUN yum groupinstall -y 'Development Tools' && yum install -y rustc curl unzip cargo libffi-devel openssl-devel
 
 ENV PY38=/opt/python/cp38-cp38/bin/python
 ENV PY39=/opt/python/cp39-cp39/bin/python

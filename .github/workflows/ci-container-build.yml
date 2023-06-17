@@ -17,12 +17,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build images
-        run: make x86_64
+        run: make 2_28_x86_64
         working-directory: .github/ci-containers
       - name: Push images
         run: |
           echo ${GITHUB_TOKEN} | docker login -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} --password-stdin ghcr.io
-          make push-x86_64
+          make push-2_28_x86_64
           docker logout ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -49,11 +49,11 @@ jobs:
         with:
           path: deqr-containerbuild
       - name: Build images
-        run: make aarch64
+        run: make 2_28_aarch64
       - name: Push images
         run: |
           echo ${GITHUB_TOKEN} | docker login -u ${{ secrets.DOCKER_REGISTRY_USERNAME }} --password-stdin ghcr.io
-          make push-aarch64
+          make push-2_28_aarch64
           docker logout ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

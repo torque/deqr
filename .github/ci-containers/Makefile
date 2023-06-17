@@ -1,7 +1,7 @@
 DOCKER_REGISTRY := ghcr.io
 DOCKER_PROJECT := torque/deqr
 
-ARCHITECTURES := aarch64 x86_64
+ARCHITECTURES := 2_28_aarch64 2_28_x86_64
 REGISTRY_PREFIX := $(DOCKER_REGISTRY)/$(DOCKER_PROJECT)
 IMAGE_BASENAME := $(REGISTRY_PREFIX)/linux-build
 GET_IMAGE_TAG = $(addprefix $(IMAGE_BASENAME)@,$(1))
@@ -30,7 +30,7 @@ $(ARCHITECTURES): $(call GET_IMAGE_TAG,$$@)
 
 $(BUILD_ENV_IMAGES): IMG_ARCHITECTURE = $(call GET_ARCHITECTURE,$@)
 $(BUILD_ENV_IMAGES):
-	docker pull quay.io/pypa/manylinux_2_24_$(IMG_ARCHITECTURE):latest
+	docker pull quay.io/pypa/manylinux_$(IMG_ARCHITECTURE):latest
 	docker build \
 		--progress=plain \
 		-f "build-env.Dockerfile" \
