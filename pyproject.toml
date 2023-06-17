@@ -17,7 +17,7 @@ include = [
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
-Cython = {version = "3.0.0a11", allow-prereleases = true}
+Cython = {version = "3.0.0b3", allow-prereleases = true}
 
 # tests
 pytest = ">=7.0.0"
@@ -32,7 +32,7 @@ sphinx-inline-tabs = ">=2022.1.2-beta.11"
 
 [build-system]
 requires = [
-    "cython==3.0.0a11",
+    "cython==3.0.0b3",
     "poetry-core>=1.0.0",
     "setuptools>=40.9.0",
     "wheel",
