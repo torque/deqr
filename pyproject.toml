@@ -4,7 +4,7 @@ version = "0.2.2"
 description = "qr code decoding library"
 authors = ["torque <torque@users.noreply.github.com>"]
 license = "LGPL-2.1-or-later"
-readme = "README.md"
+readme = ["README.md", "CHANGELOG.md"]
 repository = "https://github.com/torque/deqr"
 documentation = "https://torque.github.io/deqr-docs/"
 build = {script = "build.py", generate-setup-file = true}
