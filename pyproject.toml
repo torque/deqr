@@ -9,8 +9,8 @@ repository = "https://github.com/torque/deqr"
 documentation = "https://torque.github.io/deqr-docs/"
 build = "build.py"
 include = [
-    "deps/qrdec/src",
-    "deps/quirc/lib",
+    {path = "deps/qrdec/src", format = "sdist"},
+    {path = "deps/quirc/lib", format = "sdist"}
 ]
 
 [tool.poetry.dependencies]
