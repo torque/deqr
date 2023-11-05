@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build images
         run: make 2_28_x86_64
         working-directory: .github/ci-containers
@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         # NOTE: github actions handles container builds in perhaps the stupidest way
         #       possible, by bind-mounting the host-side runner workdir directly into
         #       the container and then running all actions there. This has a lot of

@@ -13,11 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -102,6 +102,14 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.11 artifacts"
+          git clean -fdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.12"
+          "${PY312}" -Im build
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.12 artifacts"
           git clean -fdxe dist
           echo "::endgroup::"
       - name: Cleanup

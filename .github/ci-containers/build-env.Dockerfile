@@ -7,29 +7,20 @@ ENV PY38=/opt/python/cp38-cp38/bin/python
 ENV PY39=/opt/python/cp39-cp39/bin/python
 ENV PY310=/opt/python/cp310-cp310/bin/python
 ENV PY311=/opt/python/cp311-cp311/bin/python
-
-ENV VE38=/venvs/py-38
-ENV VE39=/venvs/py-39
-ENV VE310=/venvs/py-310
-ENV VE311=/venvs/py-311
+ENV PY312=/opt/python/cp312-cp312/bin/python
 
 RUN mkdir /venvs
-RUN "$PY311" -m venv /venvs/poetry \
- && /venvs/poetry/bin/pip install -U pip poetry
+RUN "$PY311" -m venv /venvs/poetry && /venvs/poetry/bin/pip install -U pip poetry
+RUN "$PY311" -m venv /venvs/docbuild && /venvs/docbuild/bin/pip install -U pip
 ENV POETRY=/venvs/poetry/bin/poetry
+ENV DOCENV=/venvs/docbuild
 
 RUN "$PY38" -m pip install -U pip build
 RUN "$PY39" -m pip install -U pip build
 RUN "$PY310" -m pip install -U pip build
 RUN "$PY311" -m pip install -U pip build
-RUN "$PY38" -m venv "$VE38"
-RUN "$PY39" -m venv "$VE39"
-RUN "$PY310" -m venv "$VE310"
-RUN "$PY311" -m venv "$VE311"
+RUN "$PY312" -m pip install -U pip build
 
 COPY poetry.lock pyproject.toml ./
 
-RUN . "${VE38}"/bin/activate && "$POETRY" install --no-root && deactivate
-RUN . "${VE39}"/bin/activate && "$POETRY" install --no-root && deactivate
-RUN . "${VE310}"/bin/activate && "$POETRY" install --no-root && deactivate
-RUN . "${VE311}"/bin/activate && "$POETRY" install --no-root && deactivate
+RUN . "$DOCENV"/bin/activate && "$POETRY" install --no-root && deactivate

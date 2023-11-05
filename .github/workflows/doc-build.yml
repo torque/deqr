@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -27,10 +27,10 @@ jobs:
       - name: Build and install
         run: |
           "${POETRY}" self add "poetry-dynamic-versioning[plugin]"
-          . "${VE311}"/bin/activate && "${POETRY}" install
+          . "${DOCENV}"/bin/activate && "${POETRY}" install
       - name: Generate documentation
         run: |
-          "${VE311}"/bin/python -m sphinx -M html docs docs/_build
+          "${DOCENV}"/bin/python -m sphinx -M html docs docs/_build
       - name: Environment variable fiddling (branch)
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/heads/}" >> ${GITHUB_ENV}
