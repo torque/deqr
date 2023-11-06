@@ -12,7 +12,7 @@ jobs:
     defaults: {run: {working-directory: deqr-docbuild}}
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/torque/deqr/linux-build:x86_64"
+      image: "ghcr.io/torque/deqr/linux-build:2_28_x86_64"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -24,25 +24,21 @@ jobs:
           submodules: recursive
           fetch-depth: 0
           path: deqr-docbuild
-      - name: Build and install
+      - name: Build
         run: |
-          "${POETRY}" self add "poetry-dynamic-versioning[plugin]"
-          . "${DOCENV}"/bin/activate && "${POETRY}" install
-      - name: Generate documentation
-        run: |
-          "${DOCENV}"/bin/python -m sphinx -M html docs docs/_build
+          . "${DOCENV}"/bin/activate && "${POETRY}" install && sphinx-build -M html docs docs/_build
       - name: Environment variable fiddling (branch)
+        if: ${{ startsWith(github.ref, 'refs/heads/') }}
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/heads/}" >> ${GITHUB_ENV}
           printf "%s=%s\n" COMMIT_REF ${{ github.sha }} >> ${GITHUB_ENV}
           printf "%s=%s\n" LINK_NAME latest-dev >> ${GITHUB_ENV}
-        if: ${{ startsWith(github.ref, 'refs/heads/') }}
       - name: Environment variable fiddling (tag)
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           printf "%s=%s\n" BRANCH_NAME "${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
           printf "%s=%s\n" COMMIT_REF "${GITHUB_REF#refs/tags/}" >> ${GITHUB_ENV}
           printf "%s=%s\n" LINK_NAME latest >> ${GITHUB_ENV}
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
       - name: Publish documentation
         run: |
           git clone https://${{ secrets.DOC_PUBLISH_USER }}:${{ secrets.DOC_PUBLISH_TOKEN }}@github.com/torque/deqr-docs.git
