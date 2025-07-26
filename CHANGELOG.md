@@ -1,5 +1,22 @@
 ## Changelog
 
+### [0.2.3] - 2025-07-26
+
+This release has no API or functionality changes. However, support for python 3.8 (end of life) and 3.9 (nearly end of life) have been removed. Pre-built wheels for python 3.12 and python 3.13 have been added.
+
+#### Added
+
+- Add builds for python 3.12 and 3.13. ([`aea51f29`](https://github.com/torque/deqr/commit/aea51f29d38c10b961b38a0053d8ca92aae4bdd6))
+
+#### Changed
+
+- Mark `binarize` function `noexcept` ([`c4d5a2dd`](https://github.com/torque/deqr/commit/c4d5a2dd6235adc2cc8a7069452fbc6f8cba19dc))
+- Update build system dependencies and convert `pyproject.toml` to the [modern PyPA format](https://packaging.python.org/en/latest/specifications/pyproject-toml/) ([`a9d19acb`](https://github.com/torque/deqr/commit/a9d19acbf636634bae5a226b30eb09959dbec668))
+
+#### Removed
+
+- Remove support for python 3.8 and 3.9. ([`aea51f29`](https://github.com/torque/deqr/commit/aea51f29d38c10b961b38a0053d8ca92aae4bdd6))
+
 ### [0.2.2] - 2023-06-17
 
 #### Added

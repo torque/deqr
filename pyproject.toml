@@ -1,6 +1,6 @@
 [project]
 name = "deqr"
-version = "0.2.2"
+version = "0.2.3"
 description = "qr code decoding library"
 authors = [{ name = "torque", email = "torque@users.noreply.github.com" }]
 license = "LGPL-2.1-or-later"
