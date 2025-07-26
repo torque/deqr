@@ -7,7 +7,7 @@ license = "LGPL-2.1-or-later"
 license-files = ["COPYING", "LICENSE.isc", "LICENSE.lgpl"]
 readme = "README.md"
 keywords = ["qr", "qr code", "decoder"]
-requires-python = ">=3.8,<4.0"
+requires-python = ">=3.10,<4.0"
 dependencies = []
 
 [project.urls]

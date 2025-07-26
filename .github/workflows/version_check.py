@@ -1,9 +1,35 @@
-import re
+import pathlib
 import sys
 
-# usage: version_check.py <__init__.py> <poetry version -s>
+from poetry.core.pyproject.toml import PyProjectTOML
 
-source_ver = re.match(r'__version__\s*=\s*(.+)', open(sys.argv[1], 'r').read())[1][1:-1]
-poetry_ver = sys.argv[2]
+# usage: version_check.py /path/to/pyproject.toml [git tag]
 
-sys.exit(source_ver != poetry_ver)
+pyptoml = pathlib.Path(sys.argv[1])
+projver = pyptoml.parent / "deqr" / "version.py"
+
+proj = PyProjectTOML(pyptoml)
+
+ver = {}
+with open(projver) as f:
+    verc = f.read()
+exec(verc, None, ver)
+
+vermatch = ver['__version__'] != proj.data['project']['version']
+
+if len(sys.argv) == 3:
+    vermatch = vermatch or sys.argv[2] != ver['__version__']
+
+if vermatch:
+    print(
+        (
+            "::error::version mismatch: {\n"
+            f"  version.py:     {ver['__version__']}\n"
+            f"  pyproject.toml: {proj.data['project']['version']}\n"
+            + (f"  git tag: {sys.argv[2]}\n" if len(sys.argv) == 3 else "")
+            + "}"
+        ),
+        file=sys.stderr
+    )
+
+sys.exit(vermatch)

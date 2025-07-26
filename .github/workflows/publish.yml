@@ -10,8 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        os: [macos-14, macos-13, windows-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t"]
 
     steps:
       - name: Checkout
@@ -20,66 +20,39 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip build poetry
+          python -m pip install --upgrade pip build twine poetry_core==2.1.3
       - name: Check version is coherent
         run: |
-          python .github/workflows/version_check.py "deqr/__init__.py" "$(poetry version -s)"
+          python .github/workflows/version_check.py pyproject.toml ${{ github.ref_name }}
       - name: Build
         run: |
+          git clean -ffdx
           python -Im build -w
       - name: Publish
         run: |
-          poetry publish --username="${{ secrets.PYPI_USERNAME}}" --password="${{ secrets.PYPI_PASSWORD }}"
-
-  build-sdist:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip build poetry
-      - name: Check version is coherent
-        run: |
-          python .github/workflows/version_check.py "deqr/__init__.py" "$(poetry version -s)"
-      - name: Build
-        run: |
-          python -Im build -s
-      - name: Publish
-        run: |
-          poetry publish --username="${{ secrets.PYPI_USERNAME}}" --password="${{ secrets.PYPI_PASSWORD }}"
+          twine upload -p "${{ secrets.PYPI_PASSWORD }}" dist/*
 
   build-wheels-linux:
-    defaults: {run: {working-directory: deqr-publish}}
-    runs-on: ${{ matrix.platform }}
+    defaults: { run: { working-directory: deqr-publish } }
+    runs-on: ${{ matrix.os }}
     container:
-      image: ghcr.io/torque/deqr/linux-build:${{ matrix.arch }}
+      image: ghcr.io/torque/deqr/linux-build:2_28_${{ matrix.arch }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - [self-hosted, linux, ARM64]
-          - ubuntu-latest
         include:
-          - platform: [self-hosted, linux, ARM64]
-            arch: 2_28_aarch64
-          - platform: ubuntu-latest
-            arch: 2_28_x86_64
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: ubuntu-24.04-arm
+            arch: aarch64
 
     steps:
       - name: Checkout
@@ -90,31 +63,17 @@ jobs:
           path: deqr-publish
       - name: Check version is coherent
         run: |
-          "${PY311}" .github/workflows/version_check.py "deqr/__init__.py" "$("${POETRY}" version -s)"
+          "${POETRY_PY}" .github/workflows/version_check.py pyproject.toml ${{ github.ref_name }}
       - name: Build
         run: |
-          echo "::group::Build for Python 3.8"
-          "${PY38}" -Im build -w
-          echo "::endgroup::"
-
-          echo "::group::Clean Python 3.8 artifacts"
-          git clean -fdxe dist
-          echo "::endgroup::"
-
-          echo "::group::Build for Python 3.9"
-          "${PY39}" -Im build -w
-          echo "::endgroup::"
-
-          echo "::group::Clean Python 3.9 artifacts"
-          git clean -fdxe dist
-          echo "::endgroup::"
+          git clean -ffdx
 
           echo "::group::Build for Python 3.10"
           "${PY310}" -Im build -w
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.10 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.11"
@@ -122,7 +81,7 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.11 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.12"
@@ -130,11 +89,53 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.12 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.13"
+          "${PY313}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.13 artifacts"
+          git clean -ffdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.13t"
+          "${PY313T}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.13t artifacts"
+          git clean -ffdxe dist
           echo "::endgroup::"
       - name: Publish
         run: |
           "${POETRY}" publish --username="${{ secrets.PYPI_USERNAME }}" --password="${{ secrets.PYPI_PASSWORD }}"
       - name: Cleanup
         if: ${{ always() }}
-        run: git clean -fdx
+        run: git clean -ffdx
+
+  build-sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip build twine poetry_core==2.1.3
+      - name: Check version is coherent
+        run: |
+          python .github/workflows/version_check.py pyproject.toml ${{ github.ref_name }}
+      - name: Build
+        run: |
+          git clean -ffdx
+          python -Im build -s
+      - name: Publish
+        run: |
+          twine upload -p "${{ secrets.PYPI_PASSWORD }}" dist/*
