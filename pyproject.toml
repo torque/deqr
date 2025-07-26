@@ -1,40 +1,47 @@
-[tool.poetry]
+[project]
 name = "deqr"
 version = "0.2.2"
 description = "qr code decoding library"
-authors = ["torque <torque@users.noreply.github.com>"]
+authors = [{ name = "torque", email = "torque@users.noreply.github.com" }]
 license = "LGPL-2.1-or-later"
-readme = ["README.md", "CHANGELOG.md"]
-repository = "https://github.com/torque/deqr"
-documentation = "https://torque.github.io/deqr-docs/"
-build = {script = "build.py", generate-setup-file = true}
-include = [
-    {path = "deps/qrdec/src", format = "sdist"},
-    {path = "deps/quirc/lib", format = "sdist"}
+license-files = ["COPYING", "LICENSE.isc", "LICENSE.lgpl"]
+readme = "README.md"
+keywords = ["qr", "qr code", "decoder"]
+requires-python = ">=3.8,<4.0"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/torque/deqr"
+Documentation = "https://torque.github.io/deqr-docs/"
+Issues = "https://github.com/torque/deqr/issues"
+Changelog = "https://github.com/torque/deqr/blob/master/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "cython==3.1.2",
+    "pytest>=7.0.0",
+    "Pillow>=8.0.0",
+    "numpy>=1.20.0",
+]
+documentation = [
+    "sphinx==7.4.7",
+    "sphinx-copybutton==0.5.2",
+    "furo==2024.4.27",
+    "sphinx-inline-tabs==2023.4.21",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-
-[tool.poetry.dev-dependencies]
-cython = {version = "3.0.5", allow-prereleases = true}
-
-# tests
-pytest = ">=7.0.0"
-Pillow = ">=8.0.0"
-numpy = ">=1.20.0"
-
-# documentation
-sphinx = "^4.0.0"
-sphinx-copybutton = "^0.4.0"
-furo = "^2022.1.2"
-sphinx-inline-tabs = ">=2022.1.2-beta.11"
+[tool.poetry]
+build = { script = "build.py", generate-setup-file = true }
+include = [
+    { path = "deps/qrdec/src", format = "sdist" },
+    { path = "deps/quirc/lib", format = "sdist" },
+]
 
 [build-system]
 requires = [
-    "cython==3.0.5",
-    "poetry-core>=1.6.0,<1.7.0",
-    "setuptools>=40.9.0",
-    "wheel",
+    "cython==3.1.2",
+    "poetry-core==2.1.3",
+    "setuptools==80.9.0",
+    "wheel==0.46.1",
 ]
 build-backend = "poetry.core.masonry.api"
