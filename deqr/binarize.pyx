@@ -14,9 +14,9 @@
 
 from . cimport binarize as bnz
 
-cdef extern void qr_binarize(unsigned char *_img, int _width, int _height, int invert) nogil
+cdef extern void qr_binarize(unsigned char *_img, int _width, int _height, int invert) noexcept nogil
 
-cpdef void binarize(bnz.uint8[::1] image, int width, int height, bint invert) nogil:
+cpdef void binarize(bnz.uint8[::1] image, int width, int height, bint invert) noexcept nogil:
     """
     Binarize an image. Manipulation occurs in place, mutating the input data.
 
