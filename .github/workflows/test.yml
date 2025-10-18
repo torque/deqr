@@ -44,7 +44,9 @@ jobs:
         # python does very stupid things with its import path. -P would be the more
         # proper flag, but that doesn't exist until 3.11, so it's not generally
         # useful.
-        run: python -Im build -w
+        run: |
+          git clean -ffdx
+          python -Im build -w
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -55,18 +57,24 @@ jobs:
     defaults: { run: { working-directory: deqr-build } }
     runs-on: ${{ matrix.os }}
     container:
-      image: ghcr.io/torque/deqr/linux-build:2_28_${{ matrix.arch }}
+      image: ghcr.io/torque/deqr/linux-build:${{ matrix.image }}_${{ matrix.arch }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
+        libc: [glibc, musl]
+        arch: [aarch64, x86_64]
         include:
-          - os: ubuntu-latest
-            arch: x86_64
-          - os: ubuntu-24.04-arm
-            arch: aarch64
+          - libc: glibc
+            image: manylinux_2_28
+          - libc: musl
+            image: musllinux_1_2
+          - arch: aarch64
+            os: ubuntu-24.04-arm
+          - arch: x86_64
+            os: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,12 +87,14 @@ jobs:
           "${POETRY_PY}" .github/workflows/version_check.py pyproject.toml
       - name: Build
         run: |
+          git clean -ffdx
+
           echo "::group::Build for Python 3.10"
           "${PY310}" -Im build -w
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.10 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.11"
@@ -92,7 +102,7 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.11 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.12"
@@ -100,7 +110,7 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.12 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.13"
@@ -108,7 +118,7 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.13 artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
 
           echo "::group::Build for Python 3.13t"
@@ -116,12 +126,12 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.13t artifacts"
-          git clean -fdxe dist
+          git clean -ffdxe dist
           echo "::endgroup::"
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: deqr-linux-${{ matrix.arch }}-multipy
+          name: deqr-linux-${{ matrix.libc }}-${{ matrix.arch }}-multipy
           path: deqr-build/dist
       - name: Cleanup
         if: ${{ always() }}

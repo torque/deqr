@@ -41,18 +41,24 @@ jobs:
     defaults: { run: { working-directory: deqr-publish } }
     runs-on: ${{ matrix.os }}
     container:
-      image: ghcr.io/torque/deqr/linux-build:2_28_${{ matrix.arch }}
+      image: ghcr.io/torque/deqr/linux-build:${{ matrix.image }}_${{ matrix.arch }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
+        libc: [glibc, musl]
+        arch: [aarch64, x86_64]
         include:
-          - os: ubuntu-latest
-            arch: x86_64
-          - os: ubuntu-24.04-arm
-            arch: aarch64
+          - libc: glibc
+            image: manylinux_2_28
+          - libc: musl
+            image: musllinux_1_2
+          - arch: aarch64
+            os: ubuntu-24.04-arm
+          - arch: x86_64
+            os: ubuntu-latest
 
     steps:
       - name: Checkout
