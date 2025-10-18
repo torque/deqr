@@ -57,7 +57,43 @@ push-glibc@x86_64: glibc@x86_64
 	@docker push $(IMAGE_BASENAME):manylinux_2_28_x86_64
 	@echo ">> Pushed $(IMAGE_BASENAME):manylinux_2_28_x86_64"
 
+.PHONY: musl@aarch64
+musl@aarch64:
+	@echo ">> Pulling base image for $@"
+	@docker pull quay.io/pypa/musllinux_1_2_aarch64:latest
+	@echo ">> Building build image for $@"
+	@docker build \
+		--progress=plain \
+		-f "musllinux.Dockerfile" \
+		--build-arg "ARCHITECTURE=1_2_aarch64" \
+		-t "$(IMAGE_BASENAME):musllinux_1_2_aarch64" ../..
+	@echo ">> Tagged $(IMAGE_BASENAME):musllinux_1_2_aarch64"
+
+.PHONY: push-musl@aarch64
+push-musl@aarch64: musl@aarch64
+	@echo ">> Pushing $(IMAGE_BASENAME):musllinux_1_2_aarch64"
+	@docker push $(IMAGE_BASENAME):musllinux_1_2_aarch64
+	@echo ">> Pushed $(IMAGE_BASENAME):musllinux_1_2_aarch64"
+
+.PHONY: musl@x86_64
+musl@x86_64:
+	@echo ">> Pulling base image for $@"
+	@docker pull quay.io/pypa/musllinux_1_2_x86_64:latest
+	@echo ">> Building build image for $@"
+	@docker build \
+		--progress=plain \
+		-f "musllinux.Dockerfile" \
+		--build-arg "ARCHITECTURE=1_2_x86_64" \
+		-t "$(IMAGE_BASENAME):musllinux_1_2_x86_64" ../..
+	@echo ">> Tagged $(IMAGE_BASENAME):musllinux_1_2_x86_64"
+
+.PHONY: push-musl@x86_64
+push-musl@x86_64: musl@x86_64
+	@echo ">> Pushing $(IMAGE_BASENAME):musllinux_1_2_x86_64"
+	@docker push $(IMAGE_BASENAME):musllinux_1_2_x86_64
+	@echo ">> Pushed $(IMAGE_BASENAME):musllinux_1_2_x86_64"
+
 .PHONY: build
-build: glibc@aarch64 glibc@x86_64
+build: glibc@aarch64 glibc@x86_64 musl@aarch64 musl@x86_64
 .PHONY: push
-push: push-glibc@aarch64 push-glibc@x86_64
+push: push-glibc@aarch64 push-glibc@x86_64 push-musl@aarch64 push-musl@x86_64

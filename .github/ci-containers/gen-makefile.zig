@@ -1,17 +1,20 @@
 // zig-0.15 run gen-makefile.zig
 const Libc = enum {
     glibc,
+    musl,
 
     const all: []const Libc = all_tags(Libc);
 
     fn container(libc: Libc) []const u8 {
         return switch (libc) {
             .glibc => "manylinux",
+            .musl => "musllinux",
         };
     }
     fn version(libc: Libc) []const u8 {
         return switch (libc) {
             .glibc => "2_28",
+            .musl => "1_2",
         };
     }
 };
