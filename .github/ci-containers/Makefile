@@ -1,38 +1,63 @@
 DOCKER_REGISTRY := ghcr.io
 DOCKER_PROJECT := torque/deqr
-
-ARCHITECTURES := 2_28_aarch64 2_28_x86_64
 REGISTRY_PREFIX := $(DOCKER_REGISTRY)/$(DOCKER_PROJECT)
 IMAGE_BASENAME := $(REGISTRY_PREFIX)/linux-build
-GET_IMAGE_TAG = $(addprefix $(IMAGE_BASENAME)@,$(1))
-GET_ARCHITECTURE = $(lastword $(subst @, ,$(1)))
-FIX_TAG_FOR_DOCKER = $(subst @,:,$(1))
 
-GET_PUSH_ARCHITECTURE = $(lastword $(subst -, ,$(1)))
-GET_IMAGE_FOR_PUSH = $(addprefix $(IMAGE_BASENAME):,$(call GET_PUSH_ARCHITECTURE,$(1)))
-PUSH_COMMAND = docker push $(1);
+.PHONY: all
+all:
+	@echo Build and push images containing multi-python linux build environments.
+	@echo
+	@echo Usage:
+	@echo "    make <libc>@<arch> "#" build an individual image e.g. for local testing"
+	@echo "    make push-<libc>@<arch> "#" build and push an individual image"
+	@echo "    make push "#" build all images"
+	@echo "    make push "#" build and push all images"
+	@echo
+	@echo Available libc:
+	@echo "    - glibc"
+	@echo "    - musl"
+	@echo
+	@echo Available arch:
+	@echo "    - aarch64"
+	@echo "    - x86_64"
 
-BUILD_ENV_IMAGES := $(call GET_IMAGE_TAG,$(ARCHITECTURES))
-ALL_IMAGES := $(BUILD_ENV_IMAGES)
-
-.SECONDEXPANSION:
-.PHONY: all push $(addprefix push-,$(ARCHITECTURES)) $(ARCHITECTURES) $(ALL_IMAGES)
-
-all: $(ALL_IMAGES)
-
-push: $(ALL_IMAGES)
-	$(foreach image,$(ALL_IMAGES),$(call PUSH_COMMAND,$(call FIX_TAG_FOR_DOCKER,$(image))))
-
-$(addprefix push-,$(ARCHITECTURES)): $(call GET_PUSH_ARCHITECTURE,$$@)
-	$(call PUSH_COMMAND,$(call GET_IMAGE_FOR_PUSH,$@))
-
-$(ARCHITECTURES): $(call GET_IMAGE_TAG,$$@)
-
-$(BUILD_ENV_IMAGES): IMG_ARCHITECTURE = $(call GET_ARCHITECTURE,$@)
-$(BUILD_ENV_IMAGES):
-	docker pull quay.io/pypa/manylinux_$(IMG_ARCHITECTURE):latest
-	docker build \
+.PHONY: glibc@aarch64
+glibc@aarch64:
+	@echo ">> Pulling base image for $@"
+	@docker pull quay.io/pypa/manylinux_2_28_aarch64:latest
+	@echo ">> Building build image for $@"
+	@docker build \
 		--progress=plain \
-		-f "build-env.Dockerfile" \
-		--build-arg "ARCHITECTURE=$(IMG_ARCHITECTURE)" \
-		-t "$(call FIX_TAG_FOR_DOCKER,$@)" ../..
+		-f "manylinux.Dockerfile" \
+		--build-arg "ARCHITECTURE=2_28_aarch64" \
+		-t "$(IMAGE_BASENAME):manylinux_2_28_aarch64" ../..
+	@echo ">> Tagged $(IMAGE_BASENAME):manylinux_2_28_aarch64"
+
+.PHONY: push-glibc@aarch64
+push-glibc@aarch64: glibc@aarch64
+	@echo ">> Pushing $(IMAGE_BASENAME):manylinux_2_28_aarch64"
+	@docker push $(IMAGE_BASENAME):manylinux_2_28_aarch64
+	@echo ">> Pushed $(IMAGE_BASENAME):manylinux_2_28_aarch64"
+
+.PHONY: glibc@x86_64
+glibc@x86_64:
+	@echo ">> Pulling base image for $@"
+	@docker pull quay.io/pypa/manylinux_2_28_x86_64:latest
+	@echo ">> Building build image for $@"
+	@docker build \
+		--progress=plain \
+		-f "manylinux.Dockerfile" \
+		--build-arg "ARCHITECTURE=2_28_x86_64" \
+		-t "$(IMAGE_BASENAME):manylinux_2_28_x86_64" ../..
+	@echo ">> Tagged $(IMAGE_BASENAME):manylinux_2_28_x86_64"
+
+.PHONY: push-glibc@x86_64
+push-glibc@x86_64: glibc@x86_64
+	@echo ">> Pushing $(IMAGE_BASENAME):manylinux_2_28_x86_64"
+	@docker push $(IMAGE_BASENAME):manylinux_2_28_x86_64
+	@echo ">> Pushed $(IMAGE_BASENAME):manylinux_2_28_x86_64"
+
+.PHONY: build
+build: glibc@aarch64 glibc@x86_64
+.PHONY: push
+push: push-glibc@aarch64 push-glibc@x86_64
