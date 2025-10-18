@@ -1,5 +1,17 @@
 ## Changelog
 
+### [0.2.4] - 2025-10-18
+
+This is a maintenance release that addresses an issue with the build system but has no API or functionality changes.
+
+#### Fixed
+
+- Downgrade the `wheel` build dependency to `0.45.1` to fix building from the sdist (the `wheel 0.46` series have all been yanked from PyPI). ([`58e60890`](https://github.com/torque/deqr/commit/58e60890f1b06b6816d86f6ca4b02beaace05ab2))
+
+#### Added
+
+- Add builds for python 3.14. ([`f0465f6f`](https://github.com/torque/deqr/commit/f0465f6f211af9fdab5936bed0cc3fca7711fbf4))
+
 ### [0.2.3] - 2025-07-26
 
 This release has no API or functionality changes. However, support for python 3.8 (end of life) and 3.9 (nearly end of life) have been removed. Pre-built wheels for python 3.12 and python 3.13 have been added.
