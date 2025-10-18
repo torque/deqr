@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-14, macos-13, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t"]
         include:
           - os: macos-13
             os-name: macos
@@ -126,6 +126,22 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Clean Python 3.13t artifacts"
+          git clean -ffdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.14"
+          "${PY314}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.14 artifacts"
+          git clean -ffdxe dist
+          echo "::endgroup::"
+
+          echo "::group::Build for Python 3.14t"
+          "${PY314T}" -Im build -w
+          echo "::endgroup::"
+
+          echo "::group::Clean Python 3.14t artifacts"
           git clean -ffdxe dist
           echo "::endgroup::"
       - name: Upload artifacts
