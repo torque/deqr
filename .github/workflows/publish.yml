@@ -38,7 +38,7 @@ jobs:
           twine upload -p "${{ secrets.PYPI_PASSWORD }}" dist/*
 
   build-wheels-linux:
-    defaults: { run: { working-directory: deqr-publish } }
+    defaults: { run: { working-directory: deqr-build } }
     runs-on: ${{ matrix.os }}
     container:
       image: ghcr.io/torque/deqr/linux-build:${{ matrix.image }}_${{ matrix.arch }}
@@ -62,11 +62,23 @@ jobs:
 
     steps:
       - name: Checkout
+        if: ${{ !(matrix.libc == 'musl' && matrix.arch == 'aarch64') }}
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
-          path: deqr-publish
+          path: deqr-build
+      - name: Github Is Garbage
+        if: ${{ matrix.libc == 'musl' && matrix.arch == 'aarch64' }}
+        run: |
+          git clone \
+            --branch "${{ github.ref_name }}" \
+            --recurse-submodules \
+            "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            deqr-build
+          git -C deqr-build checkout ${{ github.sha }}
+          git -C deqr-build submodule update --init --recursive
+        working-directory: ./
       - name: Check version is coherent
         run: |
           "${POETRY_PY}" .github/workflows/version_check.py pyproject.toml ${{ github.ref_name }}

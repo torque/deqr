@@ -63,6 +63,8 @@ jobs:
           path: dist
 
   build-linux:
+    # This works around the stupid git "dubious repository ownership" error
+    # because the normal working directory is bind mounted into the container.
     defaults: { run: { working-directory: deqr-build } }
     runs-on: ${{ matrix.os }}
     container:
@@ -86,11 +88,26 @@ jobs:
             os: ubuntu-latest
     steps:
       - name: Checkout
+        if: ${{ !(matrix.libc == 'musl' && matrix.arch == 'aarch64') }}
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
           path: deqr-build
+      # Trying to use actions/checkout on musllinux-aarch64 causes an error that
+      # basically says javascript actions cannot be used on musl-aarch64, which
+      # is complete nonsense.
+      - name: Github Is Garbage
+        if: ${{ matrix.libc == 'musl' && matrix.arch == 'aarch64' }}
+        run: |
+          git clone \
+            --branch "${{ github.ref_name }}" \
+            --recurse-submodules \
+            "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            deqr-build
+          git -C deqr-build checkout ${{ github.sha }}
+          git -C deqr-build submodule update --init --recursive
+        working-directory: ./
       - name: Check version is coherent
         run: |
           "${POETRY_PY}" .github/workflows/version_check.py pyproject.toml
@@ -154,10 +171,11 @@ jobs:
           git clean -ffdxe dist
           echo "::endgroup::"
       - name: Upload artifacts
+        if: ${{ !(matrix.libc == 'musl' && matrix.arch == 'aarch64') }}
         uses: actions/upload-artifact@v4
         with:
           name: deqr-linux-${{ matrix.libc }}-${{ matrix.arch }}-multipy
           path: deqr-build/dist
       - name: Cleanup
         if: ${{ always() }}
-        run: git clean -fdx
+        run: git clean -ffdx
