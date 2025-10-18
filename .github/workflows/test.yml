@@ -12,18 +12,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-13, windows-latest]
+        os: [macos-26, macos-15, macos-15-intel, macos-14, macos-13, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t"]
         include:
+          - os: macos-26
+            os-name: macos-26
+            arch: arm64
+          - os: macos-15
+            os-name: macos-15
+            arch: arm64
+          - os: macos-15-intel
+            os-name: macos-15
+            arch: x86_64
+          - os: macos-14
+            os-name: macos-14
+            arch: arm64
           - os: macos-13
-            os-name: macos
+            os-name: macos-13
             arch: x86_64
           - os: windows-latest
             os-name: windows
             arch: x86_64
-          - os: macos-14
-            os-name: macos
-            arch: arm64
 
     steps:
       - name: Checkout
