@@ -10,6 +10,8 @@ ENV PY313=/opt/python/cp313-cp313/bin/python
 ENV PY313T=/opt/python/cp313-cp313t/bin/python
 ENV PY314=/opt/python/cp314-cp314/bin/python
 ENV PY314T=/opt/python/cp314-cp314t/bin/python
+ENV PY315=/opt/python/cp315-cp315/bin/python
+ENV PY315T=/opt/python/cp315-cp315t/bin/python
 
 RUN mkdir /venvs
 RUN "$PY313" -m venv /venvs/poetry && /venvs/poetry/bin/pip install -U pip poetry_core==2.1.3 poetry==2.1.3
@@ -25,6 +27,8 @@ RUN "$PY313"  -m pip install -U pip build
 RUN "$PY313T" -m pip install -U pip build
 RUN "$PY314"  -m pip install -U pip build
 RUN "$PY314T" -m pip install -U pip build
+RUN "$PY315"  -m pip install -U pip build
+RUN "$PY315T" -m pip install -U pip build
 
 COPY poetry.lock pyproject.toml ./
 
