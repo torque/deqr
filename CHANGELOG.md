@@ -1,5 +1,17 @@
 ## Changelog
 
+### [0.2.5] - 2026-10-14
+
+This is a maintenance release containing no source changes. PyPI now restricts the ability to retroactively add new artifacts to an old releases, so a new release must be made in order to publish bdist artifacts for new Python versions. [See this PyPI blog post for more details](https://blog.pypi.org/posts/2026-07-22-releases-now-reject-new-files-after-14-days/).
+
+#### Added
+
+- Add builds for python 3.15. ([`beb8a2a5`](https://github.com/torque/deqr/commit/beb8a2a5e729ee358eab41b4e7d0153c53e85dae))
+
+#### Removed
+
+- Remove support for python 3.13t. ([`5b704607`](https://github.com/torque/deqr/commit/5b704607b4c9465ea7f0825b2dadcff997c50cbc))
+
 ### [0.2.4] - 2025-10-18
 
 This is a maintenance release that addresses an issue with the build system but has no API or functionality changes.
