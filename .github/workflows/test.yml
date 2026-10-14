@@ -36,12 +36,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
           git clean -ffdx
           python -Im build -w
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deqr-${{ matrix.os-name }}-${{ matrix.arch }}-py${{ matrix.python-version }}
           path: dist
@@ -89,7 +89,7 @@ jobs:
     steps:
       - name: Checkout
         if: ${{ !(matrix.libc == 'musl' && matrix.arch == 'aarch64') }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0
@@ -172,7 +172,7 @@ jobs:
           echo "::endgroup::"
       - name: Upload artifacts
         if: ${{ !(matrix.libc == 'musl' && matrix.arch == 'aarch64') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deqr-linux-${{ matrix.libc }}-${{ matrix.arch }}-multipy
           path: deqr-build/dist
